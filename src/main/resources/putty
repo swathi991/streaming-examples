@@ -1,0 +1,66 @@
+
+
+
+ubuntu@ip-172-31-18-209:~$ sudo apt-get install -y openjdk-8-jdk
+
+ubuntu@ip-172-31-18-209:~$ java -version
+
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo vi config/server.properties
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo nohup bin/zookeeper-server-start.sh config/zookeeper.properties > ~/zookeeper-logs &
+[1] 3275
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ nohup: ignoring input and redirecting stderr to stdout
+
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo nohup bin/kafka-server-start.sh config/server.properties > ~/kafka-logs &
+[2] 3574
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ nohup: ignoring input and redirecting stderr to stdout
+
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ cd ..
+ubuntu@ip-172-31-18-209:~$ tail -f zookeeper-logs /kafka-logs
+==> zookeeper-logs <==
+[2020-08-19 16:19:29,133] INFO binding to port 0.0.0.0/0.0.0.0:2181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+[2020-08-19 16:19:44,865] INFO Accepted socket connection from /127.0.0.1:33356 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+[2020-08-19 16:19:44,872] INFO Client attempting to establish new session at /127.0.0.1:33356 (org.apache.zookeeper.server.ZooKeeperServer)
+[2020-08-19 16:19:44,875] INFO Creating new log file: log.1 (org.apache.zookeeper.server.persistence.FileTxnLog)
+[2020-08-19 16:19:44,889] INFO Established session 0x100003f2ab30000 with negotiated timeout 6000 for client /127.0.0.1:33356 (org.apache.zookeeper.server.ZooKeeperServer)
+[2020-08-19 16:19:45,005] INFO Got user-level KeeperException when processing sessionid:0x100003f2ab30000 type:create cxid:0x2 zxid:0x3 txntype:-1 reqpath:n/a Error Path:/brokers Error:KeeperErrorCode = NoNode for /brokers (org.apache.zookeeper.server.PrepRequestProcessor)
+[2020-08-19 16:19:45,015] INFO Got user-level KeeperException when processing sessionid:0x100003f2ab30000 type:create cxid:0x6 zxid:0x7 txntype:-1 reqpath:n/a Error Path:/config Error:KeeperErrorCode = NoNode for /config (org.apache.zookeeper.server.PrepRequestProcessor)
+[2020-08-19 16:19:45,021] INFO Got user-level KeeperException when processing sessionid:0x100003f2ab30000 type:create cxid:0x9 zxid:0xa txntype:-1 reqpath:n/a Error Path:/admin Error:KeeperErrorCode = NoNode for /admin (org.apache.zookeeper.server.PrepRequestProcessor)
+[2020-08-19 16:19:45,230] INFO Got user-level KeeperException when processing sessionid:0x100003f2ab30000 type:create cxid:0x15 zxid:0x15 txntype:-1 reqpath:n/a Error Path:/cluster Error:KeeperErrorCode = NoNode for /cluster (org.apache.zookeeper.server.PrepRequestProcessor)
+[2020-08-19 16:19:46,223] INFO Got user-level KeeperException when processing sessionid:0x100003f2ab30000 type:multi cxid:0x32 zxid:0x1c txntype:-1 reqpath:n/a aborting remaining multi ops. Error Path:/admin/preferred_replica_election Error:KeeperErrorCode = NoNode for /admin/preferred_replica_election (org.apache.zookeeper.server.PrepRequestProcessor)
+tail: cannot open '/kafka-logs' for reading: No such file or directory
+
+^C
+ubuntu@ip-172-31-18-209:~$
+ubuntu@ip-172-31-18-209:~$ sudo bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic json-topic
+sudo: bin/kafka-topics.sh: command not found
+ubuntu@ip-172-31-18-209:~$ cd kafka_2.12-2.2.0/
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic json-topic
+Created topic json-topic.
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo bin/kafka-topics.sh --list --zookeeper ec2-3-250-146-12.eu-west-1.compute.amazonaws.com:2181
+
+
+[2020-08-19 16:21:29,960] WARN Client session timed out, have not heard from server in 30007ms for sessionid 0x0 (org.apache.zookeeper.ClientCnxn)
+Exception in thread "main" kafka.zookeeper.ZooKeeperClientTimeoutException: Timed out waiting for connection while in state: CONNECTING
+        at kafka.zookeeper.ZooKeeperClient.$anonfun$waitUntilConnected$3(ZooKeeperClient.scala:242)
+        at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
+        at kafka.utils.CoreUtils$.inLock(CoreUtils.scala:251)
+        at kafka.zookeeper.ZooKeeperClient.waitUntilConnected(ZooKeeperClient.scala:238)
+        at kafka.zookeeper.ZooKeeperClient.<init>(ZooKeeperClient.scala:96)
+        at kafka.zk.KafkaZkClient$.apply(KafkaZkClient.scala:1825)
+        at kafka.admin.TopicCommand$ZookeeperTopicService$.apply(TopicCommand.scala:262)
+        at kafka.admin.TopicCommand$.main(TopicCommand.scala:53)
+        at kafka.admin.TopicCommand.main(TopicCommand.scala)
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo bin/kafka-topics.sh --list --zookeeper ec2-34-240-43-49.eu-west-1.compute.amazonaws.com:2181
+json-topic
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$
+ubuntu@ip-172-31-18-209:~/kafka_2.12-2.2.0$ sudo bin/kafka-console-producer.sh --broker-list ec2-34-240-43-49.eu-west-1.compute.amazonaws.com:9092 --topic json-topic
+>
+>
+>
+>
+>
+>
+>ubuntu@ip-172-31-40-241:~$ tail -f zookeeper-logs /kafka-logs

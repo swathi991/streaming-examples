@@ -1,0 +1,44 @@
+Step 1: Install jdk 8
+
+sudo apt-get update
+sudo apt-get install -y openjdk-8-jdk
+java -version
+
+wget ftp://apache.cs.utah.edu/apache.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz
+wget https://archive.apache.org/dist/kafka/2.2.0/kafka_2.12-2.2.0.tgz
+sudo tar xvzf kafka_2.12-2.2.0.tgz
+sudo chmod 777 kafka_2.12-2.2.0
+export KAFKA_HEAP_OPTS="-Xmx256M -Xms128M"
+
+>>>> To acess from outside<<<<<<<<
+config/server.properties
+
+cd kafka_2.12-0.10.2.0
+cd kafka_2.12-2.2.0
+sudo nohup bin/zookeeper-server-start.sh config/zookeeper.properties > ~/zookeeper-logs &
+ctrl+d/ctrl+c
+
+sudo nohup bin/kafka-server-start.sh config/server.properties > ~/kafka-logs &
+
+ubuntu@ip-172-31-40-241:~$ tail -f zookeeper-logs /kafka-logs
+
+OpenJDK 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000c0000000, 1073741824, 0) failed; error='Cannot allocate memory'
+Environment variables: export KAFKA_HEAP_OPTS="-Xmx256M -Xms128M"
+Change KAFKA_HEAP_OPTS in bin/kafka-server-start.sh
+
+sudo bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic json-topic
+
+
+>>>List of Topics<<<
+sudo bin/kafka-topics.sh --list --zookeeper ec2-54-195-60-93.eu-west-1.compute.amazonaws.com:2181
+
+
+
+
+
+
+sudo bin/kafka-console-producer.sh --broker-list ec2-54-195-60-93.eu-west-1.compute.amazonaws.com:9092 --topic json-topic
+
+listeners=PLAINTEXT://ec2-34-240-64-219.eu-west-1.compute.amazonaws.com:9092
+sudo bin/kafka-server-stop.sh
+sudo bin/zookeeper-server-stop.sh
